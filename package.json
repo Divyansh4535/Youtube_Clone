@@ -1,0 +1,26 @@
+{
+  "name": "youtube_clone",
+  "version": "1.0.0",
+  "description": "\"# Youtube_Clone\"",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Divyansh4535/Youtube_Clone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Divyansh4535/Youtube_Clone/issues"
+  },
+  "homepage": "https://github.com/Divyansh4535/Youtube_Clone#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
+  }
+}
