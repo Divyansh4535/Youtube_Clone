@@ -1,20 +1,20 @@
 const asyncHandler = (func) => async (req, res, next) => {
     try {
-        await func(req, res, next);
+        return await func(req, res, next);
     } catch (error) {
-        res.status(error.code || 500).send({
+        return res.status(error.statusCode || 500).json({
             status: false,
             message: error.message,
+            error: error.error || [],
         });
     }
 };
+export { asyncHandler };
 
 const asyncHandlerPromise = (requestHandler) => async (req, res, next) => {
-    Promise.resolve(requestHandler(req, res, next)).catch((error) =>
+    return Promise.resolve(requestHandler(req, res, next)).catch((error) =>
         next(error),
     );
 };
-
-export { asyncHandler };
 
 // const asyncHandlers = (fnc) => () => {};   //higerorder function - that function to pass  argument as function and then return a function
