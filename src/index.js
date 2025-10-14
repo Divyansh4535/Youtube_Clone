@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config()
+dotenv.config();
 import connectDB from "./db/index.js";
 import { PORT } from "./constant.js";
 import { app } from "./app.js";
@@ -36,4 +36,5 @@ connectDB()
         console.log("Error MongoDB connection", error);
         throw error;
     }
-})(); */
+})();
+*/
