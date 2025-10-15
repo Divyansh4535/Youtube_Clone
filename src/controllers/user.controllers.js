@@ -136,6 +136,7 @@ const loginUser = asyncHandler(async (req, res) => {
     "-password -refreshToken",
   );
 
+  console.log("safeUser----------->", safeUser);
   return res
     .status(200)
     .cookie("accessToken", accessToken, cookieOption)
@@ -217,7 +218,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
 
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user?._id);
   if (!user) throw new ApiError(404, "User not found");
 
   const isOldPasswordValid = await user.isPasswordCorrect(oldPassword);
@@ -325,7 +326,7 @@ const updateAccountCoverImage = asyncHandler(async (req, res) => {
    3️⃣ Add subscriber counts & status
    4️⃣ Return channel data
    =========================================================== */
-const getUserProfileChange = asyncHandler(async (req, res) => {
+const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { userName } = req.params;
   if (!userName?.trim())
     throw new ApiError(400, "Username parameter is required");
@@ -388,54 +389,94 @@ const getUserProfileChange = asyncHandler(async (req, res) => {
     );
 });
 
+/* ===========================================================
+    🎞️ Get Watch History (Optimized)
+   =========================================================== */
 const getWatchHistory = asyncHandler(async (req, res) => {
-  const user = await User.aggregate([
+  // 1️⃣ Validate logged-in user ID
+  if (!req.user?._id) {
+    throw new ApiError(401, "Unauthorized access — user ID missing");
+  }
+
+  // 2️⃣ Convert user ID safely to ObjectId
+  const userId = new mongoose.Types.ObjectId(req.user._id);
+
+  // 3️⃣ Aggregate pipeline for fetching user’s watch history
+  const result = await User.aggregate([
     {
-      $match: {
-        _id: new mongoose.Types.ObjectId(req.user?._id),
-      },
+      $match: { _id: userId },
     },
     {
       $lookup: {
-        from: "videos",
-        localField: "watchHistory",
-        foreignField: "_id",
-        as: "watchHistory",
+        from: "videos", // Join with videos collection
+        localField: "watchHistory", // Field from user document
+        foreignField: "_id", // Match with video _id
+        as: "watchHistory", // Output field
         pipeline: [
+          // 👇 Nested lookup to fetch video owner's info
           {
             $lookup: {
               from: "users",
               localField: "owner",
               foreignField: "_id",
               as: "owner",
-              pipeline: {
-                $project: {
-                  userName: 1,
-                  email: 1,
-                  avatar: 1,
+              pipeline: [
+                {
+                  $project: {
+                    userName: 1,
+                    avatar: 1,
+                    email: 1,
+                  },
                 },
-              },
+              ],
             },
           },
+          // 👇 Replace array of owner with a single object
           {
             $addFields: {
-              owner: {
-                $first: "$owner",
-              },
+              owner: { $first: "$owner" },
             },
           },
+          // 👇 Select only the fields you actually need from videos
+          {
+            $project: {
+              title: 1,
+              thumbnail: 1,
+              views: 1,
+              duration: 1,
+              createdAt: 1,
+              owner: 1,
+            },
+          },
+          // 👇 Optional: sort by most recently watched (if needed)
+          { $sort: { createdAt: -1 } },
         ],
+      },
+    },
+    // 👇 Project only the watchHistory field to keep output clean
+    {
+      $project: {
+        watchHistory: 1,
+        _id: 0,
       },
     },
   ]);
 
+  // 4️⃣ Handle case: no user or no watch history found
+  if (!result?.length) {
+    throw new ApiError(404, "No watch history found for this user");
+  }
+
+  const watchHistory = result[0]?.watchHistory || [];
+
+  // 5️⃣ Respond to client
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        user[0].watchHistory,
-        "watch history fetched successfully! ",
+        watchHistory,
+        "🎞️ Watch history fetched successfully!",
       ),
     );
 });
@@ -453,6 +494,6 @@ export {
   updateAccountDetails,
   updateAccountCoverImage,
   updateAccountAvatar,
-  getUserProfileChange,
-  getWatchHistory
+  getUserChannelProfile,
+  getWatchHistory,
 };
