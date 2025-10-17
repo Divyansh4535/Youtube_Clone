@@ -11,7 +11,7 @@ import {
   updateAccountAvatar,
   updateAccountCoverImage,
   updateAccountDetails,
-} from "../controllers/user.controllers.js";
+} from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 

@@ -6,9 +6,9 @@ const videoSchema = new Schema({
     type: String,
     required: true,
   },
-  thumbnailUrl: {
+  thumbnailFile: {
     type: String,
-    required: true,
+    // required: true,
   },
   title: {
     type: String,
@@ -29,6 +29,14 @@ const videoSchema = new Schema({
   isPublished: {
     type: Boolean,
     default: false,
+  },
+  comment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Comment"
+  },
+  like: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Like"
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
