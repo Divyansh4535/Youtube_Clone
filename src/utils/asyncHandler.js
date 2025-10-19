@@ -2,10 +2,13 @@ const asyncHandler = (func) => async (req, res, next) => {
     try {
         return await func(req, res, next);
     } catch (error) {
+        console.log(error);
+
         return res.status(error.statusCode || 500).json({
+            statusCode: error.statusCode || 500,
             status: false,
             message: error.message,
-            error: error.error || [],
+            error: error.error || "SERVER_ERROR" || [],
         });
     }
 };
