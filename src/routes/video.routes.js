@@ -11,7 +11,7 @@ const router = Router();
    ============================================================ */
 
 // 🎬 Get list of videos (supports pagination, search, sort)
-router.get("/", getAllVideos);
+router.get("/get-all-videos", getAllVideos);
 
 // 🎥 Get details of a single video
 router.get("/:videoId", getVideoById);
@@ -19,30 +19,29 @@ router.get("/:videoId", getVideoById);
 /* ============================================================
    🔐 AUTHENTICATED ROUTES (USER MUST BE LOGGED IN)
    ============================================================ */
-
-// ⬆️ Upload a new video (with thumbnail)
+//⬆️ Upload a new video (with thumbnail)
 router.post(
-    "/upload-video",
-    verifyUser,
-    upload.fields([
-        { name: "videoFile", maxCount: 1 },
-        { name: "thumbnailFile", maxCount: 1 },
-    ]),
-    publishAVideo
+   "/upload-video",
+   verifyUser,
+   upload.fields([
+      { name: "videoFile", maxCount: 1 },
+      { name: "thumbnailFile", maxCount: 1 },
+   ]),
+   publishAVideo
 );
 
 // ✏️ Update video details (title, description, thumbnail)
 router.patch(
-    "/:videoId",
-    verifyUser,
-    upload.fields([{ name: "thumbnailFile", maxCount: 1 }]),
-    updateVideo
+   "/:videoId",
+   verifyUser,
+   upload.fields([{ name: "thumbnailFile", maxCount: 1 }]),
+   updateVideo
 );
 
 // 🚫 Delete a video
-router.delete("/:videoId", verifyUser, deleteVideo);
+router.delete("/delete-video/:videoId", verifyUser, deleteVideo);
 
 // 🔄 Toggle publish/unpublish status
-router.patch("/:videoId/publish-status", verifyUser, togglePublishStatus);
+router.patch("/publish-status/:videoId", verifyUser, togglePublishStatus);
 
 export default router;

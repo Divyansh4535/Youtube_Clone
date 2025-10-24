@@ -1,29 +1,29 @@
 import { Router } from "express";
 import {
-    changeCurrentPassword,
-    getAllUsers,
-    getCurrentUser,
-    getUserChannelProfile,
-    getWatchHistory,
-    loginUser,
-    logoutUser,
-    refreshAccessToken,
-    registerUser,
-    updateAccountAvatar,
-    updateAccountCoverImage,
-    updateAccountDetails,
+   changeCurrentPassword,
+   getAllUsers,
+   getCurrentUser,
+   getUserChannelProfile,
+   getWatchHistory,
+   loginUser,
+   logoutUser,
+   refreshAccessToken,
+   registerUser,
+   updateAccountAvatar,
+   updateAccountCoverImage,
+   updateAccountDetails,
 } from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 
 const router = Router();
 router.post(
-    "/register",
-    upload.fields([
-        { name: "avatar", maxCount: 1 },
-        { name: "coverImage", maxCount: 2 },
-    ]),
-    registerUser,
+   "/register",
+   upload.fields([
+      { name: "avatar", maxCount: 1 },
+      { name: "coverImage", maxCount: 2 },
+   ]),
+   registerUser,
 );
 router.get("/get-all-users", getAllUsers);
 router.post("/login", loginUser);
@@ -35,10 +35,7 @@ router.patch("/update-account-details", verifyUser, updateAccountDetails)
 router.patch("/update-account-cover-image", verifyUser, upload.single("coverImage"), updateAccountCoverImage)
 router.patch("/update-account-avatar", verifyUser, upload.single("avatar"), updateAccountAvatar)
 router.get("/channel/:userName", verifyUser,
-    getUserChannelProfile)
+   getUserChannelProfile)
 router.get("/get-watch-history", verifyUser, getWatchHistory)
-
-
-
 
 export default router;
